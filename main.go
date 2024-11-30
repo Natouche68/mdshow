@@ -1,7 +1,13 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/gomarkdown/markdown"
+)
 
 func main() {
-	fmt.Println("MDShow")
+	md := []byte("# Hello world")
+	html := markdown.ToHTML(md, nil, nil)
+	fmt.Println(string(html))
 }
