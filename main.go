@@ -17,7 +17,7 @@ func main() {
 	html := markdown.ToHTML(md, nil, nil)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, string(html))
+		fmt.Fprint(w, string(html))
 	})
 	http.ListenAndServe(":8080", nil)
 }
