@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 
 	"github.com/gomarkdown/markdown"
@@ -14,5 +15,9 @@ func main() {
 	}
 
 	html := markdown.ToHTML(md, nil, nil)
-	fmt.Println(string(html))
+
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, string(html))
+	})
+	http.ListenAndServe(":8080", nil)
 }
