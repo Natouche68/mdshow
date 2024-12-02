@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"html/template"
 	"net/http"
 	"os"
 
@@ -16,8 +16,14 @@ func main() {
 
 	html := markdown.ToHTML(md, nil, nil)
 
+	tmpl, err := template.ParseFiles("templates/index.gohtml")
+
+	if err != nil {
+		panic(err)
+	}
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, string(html))
+		tmpl.Execute(w, template.HTML(string(html)))
 	})
 	http.ListenAndServe(":8080", nil)
 }
