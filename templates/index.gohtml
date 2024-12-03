@@ -4,8 +4,82 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>MDShow</title>
+		<style>
+			@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap");
+
+			body {
+				overflow: hidden;
+				margin: 0;
+				padding: 0;
+				height: 100vh;
+				width: max-content;
+				display: flex;
+				flex-direction: row;
+				font-family: "Inter", sans-serif;
+				font-size: 1.4rem;
+				background-color: #24273a;
+				color: #cad3f5;
+			}
+
+			.slide {
+				margin: 0;
+				padding: 4rem 8rem;
+				height: calc(100vh - 8rem);
+				width: calc(100vw - 16rem);
+			}
+
+			h1,
+			h2,
+			h3,
+			h4,
+			h5,
+			h6 {
+				font-family: "JetBrains Mono", monospace;
+			}
+
+			h1 {
+				margin-top: 4rem;
+				font-size: 5rem;
+				font-weight: 700;
+				color: #91d7e3;
+			}
+
+			.buttons {
+				position: fixed;
+				bottom: 0;
+				right: 0;
+			}
+		</style>
 	</head>
 	<body>
-		{{ . }}
+		<div class="slide">
+			{{ .Content }}
+		</div>
+
+		<div class="buttons">
+			<button id="previous"><</button>
+			<button id="next">></button>
+		</div>
+
+		<script>
+			const slides = document.getElementsByClassName("slide");
+			const slideNumber = slides.length;
+			const previousButton = document.getElementById("previous");
+			const nextButton = document.getElementById("next");
+			let currentSlide = 0;
+
+			previousButton.addEventListener("click", () => {
+				slides[currentSlide].style.display = "none";
+				currentSlide = (currentSlide - 1 + slideNumber) % slideNumber;
+				console.log(currentSlide);
+				slides[currentSlide].style.display = "block";
+			});
+			nextButton.addEventListener("click", () => {
+				slides[currentSlide].style.display = "none";
+				currentSlide = (currentSlide + 1) % slideNumber;
+				console.log(currentSlide);
+				slides[currentSlide].style.display = "block";
+			});
+		</script>
 	</body>
 </html>
