@@ -14,6 +14,8 @@ A test markdown file for testing the MDShow CLI tool.
 
 ###### H6
 
+Some text for reference
+
 ---
 
 This is a [link](http://example.com)
