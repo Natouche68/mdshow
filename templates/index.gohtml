@@ -11,10 +11,6 @@
 				overflow: hidden;
 				margin: 0;
 				padding: 0;
-				height: 100vh;
-				width: max-content;
-				display: flex;
-				flex-direction: row;
 				font-family: "Inter", sans-serif;
 				font-size: 1.4rem;
 				background-color: #24273a;
@@ -22,10 +18,15 @@
 			}
 
 			.slide {
+				box-sizing: border-box;
+				position: absolute;
+				top: 0;
+				left: 0;
+				height: 100vh;
+				width: 100vw;
 				margin: 0;
 				padding: 4rem 8rem;
-				height: calc(100vh - 8rem);
-				width: calc(100vw - 16rem);
+				opacity: 0;
 			}
 
 			h1,
@@ -125,28 +126,36 @@
 			const nextButton = document.getElementById("next");
 			let currentSlide = 0;
 
-			document.body.style.setProperty(
-				"--progress",
-				(currentSlide + 1) / slideNumber
-			);
+			function disappearOldSlide() {
+				slides[currentSlide].animate([{ opacity: 1 }, { opacity: 0 }], {
+					duration: 400,
+					easing: "ease",
+					fill: "both",
+				});
+			}
+
+			function updateSlide() {
+				document.body.style.setProperty(
+					"--progress",
+					(currentSlide + 1) / slideNumber
+				);
+				slides[currentSlide].animate([{ opacity: 0 }, { opacity: 1 }], {
+					duration: 400,
+					easing: "ease",
+					fill: "both",
+				});
+			}
+			updateSlide();
 
 			previousButton.addEventListener("click", () => {
-				slides[currentSlide].style.display = "none";
+				disappearOldSlide();
 				currentSlide = (currentSlide - 1 + slideNumber) % slideNumber;
-				slides[currentSlide].style.display = "block";
-				document.body.style.setProperty(
-					"--progress",
-					(currentSlide + 1) / slideNumber
-				);
+				updateSlide();
 			});
 			nextButton.addEventListener("click", () => {
-				slides[currentSlide].style.display = "none";
+				disappearOldSlide();
 				currentSlide = (currentSlide + 1) % slideNumber;
-				slides[currentSlide].style.display = "block";
-				document.body.style.setProperty(
-					"--progress",
-					(currentSlide + 1) / slideNumber
-				);
+				updateSlide();
 			});
 		</script>
 	</body>
