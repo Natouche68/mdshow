@@ -8,6 +8,7 @@ import (
 
 	"github.com/charmbracelet/log"
 	"github.com/gomarkdown/markdown"
+	"github.com/gomarkdown/markdown/parser"
 )
 
 type PresentationData struct {
@@ -23,13 +24,16 @@ func main() {
 		log.Fatal("Error parsing template", "err", err)
 	}
 
+	mdExtensions := parser.CommonExtensions | parser.OrderedListStart | parser.SuperSubscript
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		md, err := os.ReadFile("example.md")
 		if err != nil {
 			log.Fatal("Error reading Markdown file", "err", err)
 		}
 
-		html := string(markdown.ToHTML(md, nil, nil))
+		mdParser := parser.NewWithExtensions(mdExtensions)
+		html := string(markdown.ToHTML(md, mdParser, nil))
 
 		html = strings.ReplaceAll(html, "<hr>", "</div><div class=\"slide\">")
 
