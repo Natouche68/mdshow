@@ -131,11 +131,17 @@
 			let currentSlide = 0;
 
 			function disappearOldSlide() {
-				slides[currentSlide].animate([{ opacity: 1 }, { opacity: 0 }], {
-					duration: 400,
-					easing: "ease",
-					fill: "both",
-				});
+				slides[currentSlide].animate(
+					[
+						{ opacity: 1, display: "block" },
+						{ opacity: 0, display: "none" },
+					],
+					{
+						duration: 400,
+						easing: "ease",
+						fill: "both",
+					}
+				);
 			}
 
 			function updateSlide() {
@@ -143,11 +149,17 @@
 					"--progress",
 					(currentSlide + 1) / slideNumber
 				);
-				slides[currentSlide].animate([{ opacity: 0 }, { opacity: 1 }], {
-					duration: 400,
-					easing: "ease",
-					fill: "both",
-				});
+				slides[currentSlide].animate(
+					[
+						{ opacity: 0, display: "block" },
+						{ opacity: 1, display: "block" },
+					],
+					{
+						duration: 400,
+						easing: "ease",
+						fill: "both",
+					}
+				);
 			}
 			updateSlide();
 
