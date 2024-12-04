@@ -95,9 +95,19 @@
 				cursor: pointer;
 				padding: 1rem;
 			}
+
+			.progress {
+				position: fixed;
+				bottom: 0;
+				left: 0;
+				height: 4px;
+				width: calc(100vw * var(--progress));
+				background: #91d7e3;
+				transition: width 0.4s ease;
+			}
 		</style>
 	</head>
-	<body>
+	<body style="--progress: 0">
 		<div class="slide">
 			{{ .Content }}
 		</div>
@@ -106,6 +116,7 @@
 			<button id="previous"><</button>
 			<button id="next">></button>
 		</div>
+		<div class="progress"></div>
 
 		<script>
 			const slides = document.getElementsByClassName("slide");
@@ -114,17 +125,28 @@
 			const nextButton = document.getElementById("next");
 			let currentSlide = 0;
 
+			document.body.style.setProperty(
+				"--progress",
+				(currentSlide + 1) / slideNumber
+			);
+
 			previousButton.addEventListener("click", () => {
 				slides[currentSlide].style.display = "none";
 				currentSlide = (currentSlide - 1 + slideNumber) % slideNumber;
-				console.log(currentSlide);
 				slides[currentSlide].style.display = "block";
+				document.body.style.setProperty(
+					"--progress",
+					(currentSlide + 1) / slideNumber
+				);
 			});
 			nextButton.addEventListener("click", () => {
 				slides[currentSlide].style.display = "none";
 				currentSlide = (currentSlide + 1) % slideNumber;
-				console.log(currentSlide);
 				slides[currentSlide].style.display = "block";
+				document.body.style.setProperty(
+					"--progress",
+					(currentSlide + 1) / slideNumber
+				);
 			});
 		</script>
 	</body>
