@@ -23,8 +23,8 @@
 				position: absolute;
 				top: 0;
 				left: 0;
-				height: 100vh;
 				width: 100vw;
+				height: 100vh;
 				margin: 0;
 				padding: 4rem 8rem;
 				opacity: 0;
@@ -146,17 +146,8 @@
 			let currentSlide = 0;
 
 			function disappearOldSlide() {
-				slides[currentSlide].animate(
-					[
-						{ opacity: 1, display: "block" },
-						{ opacity: 0, display: "none" },
-					],
-					{
-						duration: 400,
-						easing: "ease",
-						fill: "both",
-					}
-				);
+				slides[currentSlide].style.display = "none";
+				slides[currentSlide].style.opacity = 0;
 			}
 
 			function updateSlide() {
@@ -164,17 +155,11 @@
 					"--progress",
 					(currentSlide + 1) / slideNumber
 				);
-				slides[currentSlide].animate(
-					[
-						{ opacity: 0, display: "block" },
-						{ opacity: 1, display: "block" },
-					],
-					{
-						duration: 400,
-						easing: "ease",
-						fill: "both",
-					}
-				);
+				slides[currentSlide].style.display = "block";
+				slides[currentSlide].animate([{ opacity: 0 }, { opacity: 1 }], {
+					duration: 400,
+					fill: "forwards",
+				});
 			}
 			updateSlide();
 
