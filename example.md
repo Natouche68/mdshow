@@ -68,3 +68,7 @@ func main() {
   fmt.Println("Hello, World!")
 }
 ```
+
+---
+
+![Gopher](gopher.png)

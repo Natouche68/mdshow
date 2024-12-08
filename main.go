@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"encoding/base64"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -50,10 +51,10 @@ func main() {
 
 		css := getCodeBlocksCSS()
 
-		html := hightlightCodeToHTML(doc)
-		html = strings.ReplaceAll(html, "<hr/>", "</div><div class=\"slide\">")
+		doc = hightlightCode(doc)
+		doc = replaceImageContent(doc)
 
-		fmt.Println(html)
+		html := getStringFromHTMLDocument(doc)
 
 		tmpl.Execute(w, PresentationData{
 			Content:       template.HTML(html),
@@ -65,7 +66,7 @@ func main() {
 	http.ListenAndServe(":8080", nil)
 }
 
-func hightlightCodeToHTML(doc *goquery.Document) string {
+func hightlightCode(doc *goquery.Document) *goquery.Document {
 	doc.Find("code[class*=\"language-\"]").Each(func(i int, s *goquery.Selection) {
 		class, _ := s.Attr("class")
 		lang := strings.TrimPrefix(class, "language-")
@@ -87,18 +88,7 @@ func hightlightCodeToHTML(doc *goquery.Document) string {
 		s.SetHtml(b.String())
 	})
 
-	html, err := doc.Html()
-	if err != nil {
-		log.Error("Couldn't create new HTML document", "err", err)
-	}
-
-	html = strings.TrimPrefix(html, "<html><head></head><body>")
-	html = strings.TrimSuffix(html, "</body></html>")
-
-	html = strings.ReplaceAll(html, "<pre><code class=\"language-go\"><pre class=\"chroma\"><code>", "<pre class=\"chroma\"><code>")
-	html = strings.ReplaceAll(html, "</code></pre></code></pre>", "</code></pre>")
-
-	return html
+	return doc
 }
 
 func getCodeBlocksCSS() string {
@@ -113,4 +103,42 @@ func getCodeBlocksCSS() string {
 	writer.Flush()
 
 	return buf.String()
+}
+
+func replaceImageContent(doc *goquery.Document) *goquery.Document {
+	doc.Find("img").Each(func(i int, s *goquery.Selection) {
+		src, _ := s.Attr("src")
+
+		imgBytes, err := os.ReadFile(src)
+		if err != nil {
+			log.Error("Couldn't read file", "src", src, "err", err)
+			return
+		}
+
+		mimeType := http.DetectContentType(imgBytes)
+		encodedContent := base64.StdEncoding.EncodeToString(imgBytes)
+
+		dataUrl := fmt.Sprintf("data:%s;base64,%s", mimeType, encodedContent)
+
+		s.SetAttr("src", dataUrl)
+	})
+
+	return doc
+}
+
+func getStringFromHTMLDocument(doc *goquery.Document) string {
+	html, err := doc.Html()
+	if err != nil {
+		log.Fatal("Couldn't create new HTML document", "err", err)
+	}
+
+	html = strings.TrimPrefix(html, "<html><head></head><body>")
+	html = strings.TrimSuffix(html, "</body></html>")
+
+	html = strings.ReplaceAll(html, "<pre><code class=\"language-go\"><pre class=\"chroma\"><code>", "<pre class=\"chroma\"><code>")
+	html = strings.ReplaceAll(html, "</code></pre></code></pre>", "</code></pre>")
+
+	html = strings.ReplaceAll(html, "<hr/>", "</div><div class=\"slide\">")
+
+	return html
 }
