@@ -35,6 +35,8 @@ This is a [link](http://example.com)
 | Bob   | 27  |
 | Alice | 23  |
 
+![Rabbit](https://www.jardiner-malin.fr/wp-content/uploads/2020/09/avoir-un-lapin-dans-son-jardin.jpg)
+
 ~~Cats~~**Rabbits** are _very_ cute animals.
 
 H~2~O is a liquid and 2^10^ is 1024.

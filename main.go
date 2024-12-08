@@ -109,6 +109,10 @@ func replaceImageContent(doc *goquery.Document) *goquery.Document {
 	doc.Find("img").Each(func(i int, s *goquery.Selection) {
 		src, _ := s.Attr("src")
 
+		if strings.Contains(src, "http") {
+			return
+		}
+
 		imgBytes, err := os.ReadFile(src)
 		if err != nil {
 			log.Error("Couldn't read file", "src", src, "err", err)

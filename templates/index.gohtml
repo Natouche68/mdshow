@@ -95,6 +95,17 @@
 				text-decoration: underline;
 			}
 
+			p:has(img):only-child {
+				text-align: center;
+			}
+
+			p:has(img):not(:only-child) {
+				float: right;
+			}
+			p:has(img):not(:only-child) img {
+				max-width: 40vw;
+			}
+
 			table {
 				width: 100%;
 				border-collapse: collapse;
