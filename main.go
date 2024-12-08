@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"html/template"
 	"net/http"
 	"os"
@@ -42,10 +43,17 @@ func main() {
 		mdParser := parser.NewWithExtensions(mdExtensions)
 		htmlBytes := markdown.ToHTML(md, mdParser, nil)
 
+		doc, err := goquery.NewDocumentFromReader(bytes.NewReader(htmlBytes))
+		if err != nil {
+			log.Fatal("Couldn't create document from Markdown", "err", err)
+		}
+
 		css := getCodeBlocksCSS()
 
-		html := hightlightCodeToHTML(htmlBytes)
+		html := hightlightCodeToHTML(doc)
 		html = strings.ReplaceAll(html, "<hr/>", "</div><div class=\"slide\">")
+
+		fmt.Println(html)
 
 		tmpl.Execute(w, PresentationData{
 			Content:       template.HTML(html),
@@ -57,12 +65,7 @@ func main() {
 	http.ListenAndServe(":8080", nil)
 }
 
-func hightlightCodeToHTML(htmlBytes []byte) string {
-	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(htmlBytes))
-	if err != nil {
-		log.Fatal("Couldn't create document from Markdown", "err", err)
-	}
-
+func hightlightCodeToHTML(doc *goquery.Document) string {
 	doc.Find("code[class*=\"language-\"]").Each(func(i int, s *goquery.Selection) {
 		class, _ := s.Attr("class")
 		lang := strings.TrimPrefix(class, "language-")
@@ -88,6 +91,9 @@ func hightlightCodeToHTML(htmlBytes []byte) string {
 	if err != nil {
 		log.Error("Couldn't create new HTML document", "err", err)
 	}
+
+	html = strings.TrimPrefix(html, "<html><head></head><body>")
+	html = strings.TrimSuffix(html, "</body></html>")
 
 	html = strings.ReplaceAll(html, "<pre><code class=\"language-go\"><pre class=\"chroma\"><code>", "<pre class=\"chroma\"><code>")
 	html = strings.ReplaceAll(html, "</code></pre></code></pre>", "</code></pre>")
