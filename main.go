@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"embed"
 	"encoding/base64"
 	"fmt"
 	"html/template"
@@ -19,6 +20,9 @@ import (
 	"github.com/gomarkdown/markdown/parser"
 )
 
+//go:embed templates/*.gohtml
+var templatesFS embed.FS
+
 type PresentationData struct {
 	Content       template.HTML
 	CodeBlocksCSS template.HTML
@@ -27,7 +31,7 @@ type PresentationData struct {
 func main() {
 	log.SetReportTimestamp(false)
 
-	tmpl, err := template.ParseFiles("templates/index.gohtml")
+	tmpl, err := template.ParseFS(templatesFS, "templates/*.gohtml")
 
 	if err != nil {
 		log.Fatal("Error parsing template", "err", err)
@@ -56,7 +60,7 @@ func main() {
 
 		html := getStringFromHTMLDocument(doc)
 
-		tmpl.Execute(w, PresentationData{
+		tmpl.ExecuteTemplate(w, "index.gohtml", PresentationData{
 			Content:       template.HTML(html),
 			CodeBlocksCSS: template.HTML("<style>" + css + "</style>"),
 		})
