@@ -42,18 +42,20 @@ func main() {
 
 	mdExtensions := parser.CommonExtensions | parser.OrderedListStart | parser.SuperSubscript
 
+	theme := themes.OceanTheme
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		md, err := os.ReadFile("example.md")
 		if err != nil {
 			log.Fatal("Error reading Markdown file", "err", err)
 		}
 
-		html, css := genareteHTMLFromMarkdown(md, mdExtensions, themes.CatppuccinTheme.CodeStyle)
+		html, css := genareteHTMLFromMarkdown(md, mdExtensions, theme.CodeStyle)
 
 		tmpl.ExecuteTemplate(w, "index.gohtml", PresentationData{
 			Content:       template.HTML(html),
 			CodeBlocksCSS: template.HTML("<style>" + css + "</style>"),
-			Theme:         themes.CatppuccinTheme,
+			Theme:         theme,
 		})
 	})
 
