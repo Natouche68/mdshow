@@ -11,6 +11,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/Natouche68/mdshow/themes"
+
 	"github.com/PuerkitoBio/goquery"
 	"github.com/alecthomas/chroma/v2/formatters/html"
 	"github.com/alecthomas/chroma/v2/lexers"
@@ -26,6 +28,7 @@ var templatesFS embed.FS
 type PresentationData struct {
 	Content       template.HTML
 	CodeBlocksCSS template.HTML
+	Theme         themes.Theme
 }
 
 func main() {
@@ -45,24 +48,12 @@ func main() {
 			log.Fatal("Error reading Markdown file", "err", err)
 		}
 
-		mdParser := parser.NewWithExtensions(mdExtensions)
-		htmlBytes := markdown.ToHTML(md, mdParser, nil)
-
-		doc, err := goquery.NewDocumentFromReader(bytes.NewReader(htmlBytes))
-		if err != nil {
-			log.Fatal("Couldn't create document from Markdown", "err", err)
-		}
-
-		css := getCodeBlocksCSS()
-
-		doc = hightlightCode(doc)
-		doc = replaceImageContent(doc)
-
-		html := getStringFromHTMLDocument(doc)
+		html, css := genareteHTMLFromMarkdown(md, mdExtensions, themes.CatppuccinTheme.CodeStyle)
 
 		tmpl.ExecuteTemplate(w, "index.gohtml", PresentationData{
 			Content:       template.HTML(html),
 			CodeBlocksCSS: template.HTML("<style>" + css + "</style>"),
+			Theme:         themes.CatppuccinTheme,
 		})
 	})
 
@@ -70,7 +61,26 @@ func main() {
 	http.ListenAndServe(":8080", nil)
 }
 
-func hightlightCode(doc *goquery.Document) *goquery.Document {
+func genareteHTMLFromMarkdown(md []byte, mdExtensions parser.Extensions, styleName string) (string, string) {
+	mdParser := parser.NewWithExtensions(mdExtensions)
+	htmlBytes := markdown.ToHTML(md, mdParser, nil)
+
+	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(htmlBytes))
+	if err != nil {
+		log.Fatal("Couldn't create document from Markdown", "err", err)
+	}
+
+	css := getCodeBlocksCSS(styleName)
+
+	doc = hightlightCode(doc, styleName)
+	doc = replaceImageContent(doc)
+
+	html := getStringFromHTMLDocument(doc)
+
+	return html, css
+}
+
+func hightlightCode(doc *goquery.Document, styleName string) *goquery.Document {
 	doc.Find("code[class*=\"language-\"]").Each(func(i int, s *goquery.Selection) {
 		class, _ := s.Attr("class")
 		lang := strings.TrimPrefix(class, "language-")
@@ -81,7 +91,7 @@ func hightlightCode(doc *goquery.Document) *goquery.Document {
 			log.Error("Couldn't tokenizing code block", "err", err)
 		}
 
-		style := styles.Get("catppuccin-macchiato")
+		style := styles.Get(styleName)
 
 		formatter := html.New(html.WithClasses(true))
 		b := bytes.Buffer{}
@@ -95,8 +105,8 @@ func hightlightCode(doc *goquery.Document) *goquery.Document {
 	return doc
 }
 
-func getCodeBlocksCSS() string {
-	style := styles.Get("catppuccin-macchiato")
+func getCodeBlocksCSS(styleName string) string {
+	style := styles.Get(styleName)
 
 	buf := bytes.Buffer{}
 	writer := bufio.NewWriter(&buf)
