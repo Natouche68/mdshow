@@ -33,3 +33,14 @@ type Theme struct {
 	ArrowColor       string
 	ProgressBarColor string
 }
+
+func GetTheme(themeName string) (Theme, string) {
+	switch themeName {
+	case "catppuccin":
+		return CatppuccinTheme, "catppuccin"
+	case "ocean":
+		return OceanTheme, "ocean"
+	default:
+		return CatppuccinTheme, "catppuccin"
+	}
+}

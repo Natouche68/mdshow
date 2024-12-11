@@ -42,7 +42,15 @@ func main() {
 
 	mdExtensions := parser.CommonExtensions | parser.OrderedListStart | parser.SuperSubscript
 
-	theme := themes.OceanTheme
+	themeName := ""
+	if len(os.Args) < 2 {
+		themeName = "catppuccin"
+		log.Warn("No theme specified, using default theme")
+	} else {
+		themeName = os.Args[1]
+	}
+	theme, themeName := themes.GetTheme(themeName)
+	log.Info("Using theme", "name", themeName)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		md, err := os.ReadFile("example.md")
