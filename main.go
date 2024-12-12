@@ -42,20 +42,20 @@ func main() {
 
 	mdExtensions := parser.CommonExtensions | parser.OrderedListStart | parser.SuperSubscript
 
-	themeName := ""
-	if len(os.Args) < 2 {
-		themeName = "catppuccin"
-		log.Warn("No theme specified, using default theme")
-	} else {
-		themeName = os.Args[1]
+	mdFileName, themeName := getProgramArguments()
+
+	log.Info("Reading Markdown file", "file", mdFileName)
+	if _, err := os.Stat(mdFileName); os.IsNotExist(err) {
+		log.Fatal("Couldn't find Markdown file", "file", mdFileName)
 	}
+
 	theme, themeName := themes.GetTheme(themeName)
 	log.Info("Using theme", "name", themeName)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		md, err := os.ReadFile("example.md")
+		md, err := os.ReadFile(mdFileName)
 		if err != nil {
-			log.Fatal("Error reading Markdown file", "err", err)
+			log.Fatal("Error reading Markdown file", "file", mdFileName, "err", err)
 		}
 
 		html, css := genareteHTMLFromMarkdown(md, mdExtensions, theme.CodeStyle)
@@ -169,4 +169,20 @@ func getStringFromHTMLDocument(doc *goquery.Document) string {
 	html = strings.ReplaceAll(html, "<hr/>", "</div><div class=\"slide\">")
 
 	return html
+}
+
+func getProgramArguments() (string, string) {
+	switch len(os.Args) {
+	case 1:
+		log.Fatal("No Markdown file provided")
+		return "", ""
+	case 2:
+		log.Warn("No theme provided, using default")
+		return os.Args[1], "catppuccin"
+	case 3:
+		return os.Args[1], os.Args[2]
+	default:
+		log.Fatal("Error reading command line arguments")
+		return "", ""
+	}
 }

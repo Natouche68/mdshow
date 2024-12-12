@@ -1,5 +1,7 @@
 package themes
 
+import "github.com/charmbracelet/log"
+
 type Theme struct {
 	CodeStyle        string
 	FontImportURL    string
@@ -41,6 +43,7 @@ func GetTheme(themeName string) (Theme, string) {
 	case "ocean":
 		return OceanTheme, "ocean"
 	default:
+		log.Warn("Unknown theme, using default", "theme", themeName)
 		return CatppuccinTheme, "catppuccin"
 	}
 }
