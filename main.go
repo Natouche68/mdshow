@@ -82,18 +82,22 @@ func genareteHTMLFromMarkdown(md []byte, mdExtensions parser.Extensions, styleNa
 
 	css := getCodeBlocksCSS(styleName)
 
-	doc = hightlightCode(doc, styleName)
-	doc = replaceImageContent(doc)
+	langs := hightlightCode(doc, styleName)
+	replaceImageContent(doc)
 
-	html := getStringFromHTMLDocument(doc)
+	html := getStringFromHTMLDocument(doc, langs)
 
 	return html, css
 }
 
-func hightlightCode(doc *goquery.Document, styleName string) *goquery.Document {
+func hightlightCode(doc *goquery.Document, styleName string) []string {
+	langs := make([]string, 0)
+
 	doc.Find("code[class*=\"language-\"]").Each(func(i int, s *goquery.Selection) {
 		class, _ := s.Attr("class")
 		lang := strings.TrimPrefix(class, "language-")
+
+		langs = append(langs, lang)
 
 		lexer := lexers.Get(lang)
 		iterator, err := lexer.Tokenise(nil, s.Text())
@@ -112,7 +116,7 @@ func hightlightCode(doc *goquery.Document, styleName string) *goquery.Document {
 		s.SetHtml(b.String())
 	})
 
-	return doc
+	return langs
 }
 
 func getCodeBlocksCSS(styleName string) string {
@@ -129,7 +133,7 @@ func getCodeBlocksCSS(styleName string) string {
 	return buf.String()
 }
 
-func replaceImageContent(doc *goquery.Document) *goquery.Document {
+func replaceImageContent(doc *goquery.Document) {
 	doc.Find("img").Each(func(i int, s *goquery.Selection) {
 		src, _ := s.Attr("src")
 
@@ -150,11 +154,9 @@ func replaceImageContent(doc *goquery.Document) *goquery.Document {
 
 		s.SetAttr("src", dataUrl)
 	})
-
-	return doc
 }
 
-func getStringFromHTMLDocument(doc *goquery.Document) string {
+func getStringFromHTMLDocument(doc *goquery.Document, langs []string) string {
 	html, err := doc.Html()
 	if err != nil {
 		log.Fatal("Couldn't create new HTML document", "err", err)
@@ -163,7 +165,9 @@ func getStringFromHTMLDocument(doc *goquery.Document) string {
 	html = strings.TrimPrefix(html, "<html><head></head><body>")
 	html = strings.TrimSuffix(html, "</body></html>")
 
-	html = strings.ReplaceAll(html, "<pre><code class=\"language-go\"><pre class=\"chroma\"><code>", "<pre class=\"chroma\"><code>")
+	for _, lang := range langs {
+		html = strings.ReplaceAll(html, "<pre><code class=\"language-"+lang+"\"><pre class=\"chroma\"><code>", "<pre class=\"chroma\"><code>")
+	}
 	html = strings.ReplaceAll(html, "</code></pre></code></pre>", "</code></pre>")
 
 	html = strings.ReplaceAll(html, "<hr/>", "</div><div class=\"slide\">")
