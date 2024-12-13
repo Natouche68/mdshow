@@ -45,6 +45,8 @@ func GetTheme(themeName string) (Theme, string) {
 		return OceanTheme, "ocean"
 	case "business":
 		return BusinessTheme, "business"
+	case "natural":
+		return NaturalTheme, "natural"
 	default:
 		log.Warn("Unknown theme, using default", "theme", themeName)
 		return CatppuccinTheme, "catppuccin"
