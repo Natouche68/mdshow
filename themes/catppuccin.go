@@ -8,6 +8,7 @@ var CatppuccinTheme Theme = Theme{
 	CodeFontFamily:   "JetBrains Mono",
 	BackgroundColor:  "#24273a",
 	TextColor:        "#cad3f5",
+	HUnderlined:      false,
 	H1Weight:         700,
 	H1Color:          "#91d7e3",
 	H2Weight:         700,

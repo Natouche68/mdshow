@@ -37,6 +37,7 @@
 			h5,
 			h6 {
 				font-family: "{{ .Theme.TitleFontFamily }}", sans-serif;
+				text-decoration: {{ if .Theme.HUnderlined }}underline{{ else }}none{{ end }};
 			}
 
 			h1 {

@@ -10,6 +10,7 @@ type Theme struct {
 	CodeFontFamily   string
 	BackgroundColor  string
 	TextColor        string
+	HUnderlined      bool
 	H1Weight         int
 	H1Color          string
 	H2Weight         int

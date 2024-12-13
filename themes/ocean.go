@@ -8,6 +8,7 @@ var OceanTheme Theme = Theme{
 	CodeFontFamily:   "IBM Plex Mono",
 	BackgroundColor:  "#0D1030",
 	TextColor:        "#E6ECF2",
+	HUnderlined:      false,
 	H1Weight:         400,
 	H1Color:          "#A7BED3",
 	H2Weight:         700,
