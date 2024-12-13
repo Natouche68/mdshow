@@ -10,7 +10,7 @@ A CLI tool that allows you to create beautiful presentations from a single Markd
 
 You can either download a premade binary from the releases, or download it with Go (recommanded) :
 
-```
+```bash
 go install github.com/Natouche68/mdshow@latest
 ```
 
@@ -20,7 +20,7 @@ go install github.com/Natouche68/mdshow@latest
 
 In the command line, you can run the tool with the following command :
 
-```
+```bash
 mdshow [markdown_file] [theme_name]
 
 # Example
