@@ -22,6 +22,7 @@ var CatppuccinTheme Theme = Theme{
 	H6Weight:         400,
 	H6Color:          "#ed8796",
 	DelColor:         "#b8c0e0",
+	BlockquoteColor:  "#b8c0e0",
 	StrongColor:      "#91d7e3",
 	LinkColor:        "#91d7e3",
 	LinkWeight:       500,

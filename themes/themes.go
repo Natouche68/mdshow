@@ -24,6 +24,7 @@ type Theme struct {
 	H6Weight         int
 	H6Color          string
 	DelColor         string
+	BlockquoteColor  string
 	StrongColor      string
 	LinkColor        string
 	LinkWeight       int

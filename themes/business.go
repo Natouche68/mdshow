@@ -22,6 +22,7 @@ var BusinessTheme Theme = Theme{
 	H6Weight:         400,
 	H6Color:          "#549F93",
 	DelColor:         "#A89E97",
+	BlockquoteColor:  "#A89E97",
 	StrongColor:      "#F46036",
 	LinkColor:        "#F46036",
 	LinkWeight:       500,

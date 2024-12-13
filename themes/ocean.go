@@ -22,6 +22,7 @@ var OceanTheme Theme = Theme{
 	H6Weight:         400,
 	H6Color:          "#7195B7",
 	DelColor:         "#7898B9",
+	BlockquoteColor:  "#7898B9",
 	StrongColor:      "#A7BED3",
 	LinkColor:        "#A7BED3",
 	LinkWeight:       500,

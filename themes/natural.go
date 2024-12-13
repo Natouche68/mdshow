@@ -22,6 +22,7 @@ var NaturalTheme Theme = Theme{
 	H6Weight:         400,
 	H6Color:          "#6A994E",
 	DelColor:         "#42784C",
+	BlockquoteColor:  "#42784C",
 	StrongColor:      "#A7C957",
 	LinkColor:        "#A7C957",
 	LinkWeight:       500,
