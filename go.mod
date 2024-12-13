@@ -2,12 +2,13 @@ module github.com/Natouche68/mdshow
 
 go 1.23.3
 
-require github.com/gomarkdown/markdown v0.0.0-20241105142532-d03b89096d81
+require (
+	github.com/PuerkitoBio/goquery v1.10.0
+	github.com/alecthomas/chroma/v2 v2.14.0
+	github.com/gomarkdown/markdown v0.0.0-20241105142532-d03b89096d81
+)
 
 require (
-	github.com/PuerkitoBio/goquery v1.10.0 // indirect
-	github.com/alecthomas/chroma v0.10.0 // indirect
-	github.com/alecthomas/chroma/v2 v2.14.0 // indirect
 	github.com/andybalholm/cascadia v1.3.2 // indirect
 	github.com/dlclark/regexp2 v1.11.0 // indirect
 	golang.org/x/net v0.29.0 // indirect
