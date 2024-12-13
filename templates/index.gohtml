@@ -220,15 +220,27 @@
 			}
 			updateSlide();
 
-			previousButton.addEventListener("click", () => {
-				disappearOldSlide();
-				currentSlide = (currentSlide - 1 + slideNumber) % slideNumber;
-				updateSlide();
-			});
-			nextButton.addEventListener("click", () => {
+			function nextSlide() {
 				disappearOldSlide();
 				currentSlide = (currentSlide + 1) % slideNumber;
 				updateSlide();
+			}
+
+			function previousSlide() {
+				disappearOldSlide();
+				currentSlide = (currentSlide - 1 + slideNumber) % slideNumber;
+				updateSlide();
+			}
+
+			previousButton.addEventListener("click", previousSlide);
+			nextButton.addEventListener("click", nextSlide);
+
+			document.addEventListener("keydown", function (e) {
+				if (e.key === "ArrowLeft") {
+					previousSlide();
+				} else if (e.key === "ArrowRight" || e.key === " ") {
+					nextSlide();
+				}
 			});
 		</script>
 	</body>
