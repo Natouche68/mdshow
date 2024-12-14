@@ -42,7 +42,7 @@ func main() {
 
 	mdExtensions := parser.CommonExtensions | parser.OrderedListStart | parser.SuperSubscript
 
-	mdFileName, themeName := getProgramArguments()
+	mdFileName, themeName, isBuild := getProgramArguments()
 
 	log.Info("Reading Markdown file", "file", mdFileName)
 	if _, err := os.Stat(mdFileName); os.IsNotExist(err) {
@@ -52,23 +52,11 @@ func main() {
 	theme, themeName := themes.GetTheme(themeName)
 	log.Info("Using theme", "name", themeName)
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		md, err := os.ReadFile(mdFileName)
-		if err != nil {
-			log.Fatal("Error reading Markdown file", "file", mdFileName, "err", err)
-		}
-
-		html, css := genareteHTMLFromMarkdown(md, mdExtensions, theme.CodeStyle)
-
-		tmpl.ExecuteTemplate(w, "index.gohtml", PresentationData{
-			Content:       template.HTML(html),
-			CodeBlocksCSS: template.HTML("<style>" + css + "</style>"),
-			Theme:         theme,
-		})
-	})
-
-	log.Info("Server started on http://localhost:8080")
-	http.ListenAndServe(":8080", nil)
+	if isBuild {
+		buildPresentation(mdFileName, theme, tmpl, mdExtensions)
+	} else {
+		launchServer(mdFileName, theme, tmpl, mdExtensions)
+	}
 }
 
 func genareteHTMLFromMarkdown(md []byte, mdExtensions parser.Extensions, styleName string) (string, string) {
@@ -175,18 +163,81 @@ func getStringFromHTMLDocument(doc *goquery.Document, langs []string) string {
 	return html
 }
 
-func getProgramArguments() (string, string) {
-	switch len(os.Args) {
-	case 1:
+func getProgramArguments() (string, string, bool) {
+	if len(os.Args) == 1 {
 		log.Fatal("No Markdown file provided")
-		return "", ""
-	case 2:
-		log.Warn("No theme provided, using default")
-		return os.Args[1], "catppuccin"
-	case 3:
-		return os.Args[1], os.Args[2]
-	default:
-		log.Fatal("Error reading command line arguments")
-		return "", ""
+		return "", "", false
 	}
+
+	if os.Args[1] == "build" {
+		switch len(os.Args) {
+		case 3:
+			log.Warn("No theme provided, using default")
+			return os.Args[2], "catppuccin", true
+		case 4:
+			return os.Args[2], os.Args[3], true
+		default:
+			log.Fatal("Error reading command line arguments")
+			return "", "", false
+		}
+	} else {
+		switch len(os.Args) {
+		case 2:
+			log.Warn("No theme provided, using default")
+			return os.Args[1], "catppuccin", false
+		case 3:
+			return os.Args[1], os.Args[2], false
+		default:
+			log.Fatal("Error reading command line arguments")
+			return "", "", false
+		}
+	}
+}
+
+func launchServer(mdFileName string, theme themes.Theme, tmpl *template.Template, mdExtensions parser.Extensions) {
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		md, err := os.ReadFile(mdFileName)
+		if err != nil {
+			log.Fatal("Error reading Markdown file", "file", mdFileName, "err", err)
+		}
+
+		html, css := genareteHTMLFromMarkdown(md, mdExtensions, theme.CodeStyle)
+
+		tmpl.ExecuteTemplate(w, "index.gohtml", PresentationData{
+			Content:       template.HTML(html),
+			CodeBlocksCSS: template.HTML("<style>" + css + "</style>"),
+			Theme:         theme,
+		})
+	})
+
+	log.Info("Server started on http://localhost:8080")
+	http.ListenAndServe(":8080", nil)
+}
+
+func buildPresentation(mdFileName string, theme themes.Theme, tmpl *template.Template, mdExtensions parser.Extensions) {
+	log.Info("Building presentation")
+
+	md, err := os.ReadFile(mdFileName)
+	if err != nil {
+		log.Fatal("Error reading Markdown file", "file", mdFileName, "err", err)
+	}
+
+	html, css := genareteHTMLFromMarkdown(md, mdExtensions, theme.CodeStyle)
+
+	buf := bytes.Buffer{}
+	w := bufio.NewWriter(&buf)
+
+	tmpl.ExecuteTemplate(w, "index.gohtml", PresentationData{
+		Content:       template.HTML(html),
+		CodeBlocksCSS: template.HTML("<style>" + css + "</style>"),
+		Theme:         theme,
+	})
+	w.Flush()
+
+	newFileName := strings.TrimSuffix(mdFileName, ".md") + ".html"
+	log.Info("Writing to file", "file", newFileName)
+
+	os.WriteFile(newFileName, buf.Bytes(), 0644)
+
+	log.Info("Presentation built !")
 }
