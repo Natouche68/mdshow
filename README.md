@@ -38,3 +38,29 @@ Each slide is separated by a horizontal line (`---`).
 
 ## This is the slide 2
 ```
+
+---
+
+### Themes
+
+The following themes are available :
+
+- `catppuccin` _(default)_
+- `ocean`
+- `business`
+- `natural`
+
+---
+
+### Building presentations
+
+You can also build presentation into HTML to run them without the CLI tool.
+
+```bash
+mdshow build [markdown_file] [theme_name]
+
+# Example
+mdshow build README.md catppuccin
+```
+
+The resulting HTML file will be named as the markdown file with `.html` extension.
